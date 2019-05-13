@@ -7,4 +7,4 @@ For my project I decided to research more about Real-Time Gaming Over IP. This i
 This game was made using [libGDX](https://libgdx.badlogicgames.com/), a Java based game framework.
 I created and own all assets and property of this game, except for the code from the libGDX library.
 
-To RUN and PLAY the game download the RealTimeGameGame.jar file and run it.
+To RUN and PLAY the game download the RealTimeGameGame.jar file from the releases page: https://github.com/janfic/RealTimeGameGame/releases/tag/v1.0
