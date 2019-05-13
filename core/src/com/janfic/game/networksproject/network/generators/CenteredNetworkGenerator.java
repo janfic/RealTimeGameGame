@@ -16,10 +16,12 @@ import java.util.ArrayList;
 public class CenteredNetworkGenerator extends NetworkGenerator {
 
     private int numberOfNodes;
+    private int radiusOver;
 
     public CenteredNetworkGenerator(int gridSize, int initialNodes, ShapeRenderer sr) {
         super(gridSize, 0, 0, sr);
         this.numberOfNodes = initialNodes;
+        radiusOver = -1;
     }
 
     @Override
@@ -28,6 +30,21 @@ public class CenteredNetworkGenerator extends NetworkGenerator {
         ArrayList<NetworkNode> nodes = new ArrayList<NetworkNode>();
         ArrayList<NetworkEdge> edges = new ArrayList<NetworkEdge>();
         Network n = new Network(nodes, edges, width, height, sr);
+        radiusOver = -1;
+        for (int i = 0; i < numberOfNodes; i++) {
+            addNode(n);
+        }
+
+        return n;
+    }
+
+    @Override
+    public Network create(int width, int height, int overideRadius) {
+        //int numberOfEdges = random.nextInt(maxEdges - minEdges) + minEdges;
+        ArrayList<NetworkNode> nodes = new ArrayList<NetworkNode>();
+        ArrayList<NetworkEdge> edges = new ArrayList<NetworkEdge>();
+        Network n = new Network(nodes, edges, width, height, sr);
+        this.radiusOver = overideRadius;
 
         for (int i = 0; i < numberOfNodes; i++) {
             addNode(n);
@@ -39,11 +56,7 @@ public class CenteredNetworkGenerator extends NetworkGenerator {
     @Override
     public NetworkNode addNode(Network network) {
         float maxRadius = Math.min(network.getWidth() / 2, network.getHeight() / 2);
-        float radius = (float) (Math.sqrt(network.getNumberOfNodes() * 2) * gridSize);
-        radius = random.nextFloat() * radius;
-        while (radius > maxRadius) {
-            radius = random.nextFloat() * (float) (Math.sqrt(network.getNumberOfNodes() * 2) * gridSize);
-        }
+        float radius = getRadius(network);
         double rad = random.nextFloat() * 2 * Math.PI;
         float x = (float) (radius * Math.cos(rad)) + network.getWidth() / 2;
         float y = (float) (radius * Math.sin(rad)) + network.getHeight() / 2;
@@ -53,7 +66,8 @@ public class CenteredNetworkGenerator extends NetworkGenerator {
         }
         NetworkNode node;
         float rollForComputer = random.nextFloat();
-        if (rollForComputer < radius / maxRadius) {
+        float rate = maxRadius == -1 ? radius / maxRadius : 0.5f;
+        if (rollForComputer < rate) {
             node = new Computer(x, y);
         } else {
             node = new Router(x, y);
@@ -153,20 +167,25 @@ public class CenteredNetworkGenerator extends NetworkGenerator {
 
     @Override
     public NetworkNode addNode(Network network, Class<? extends NetworkNode> type) {
-        float maxRadius = Math.min(network.getWidth() / 2, network.getHeight() / 2);
-        float radius = (float) (Math.sqrt(network.getNumberOfNodes() * 2) * gridSize);
-        radius = random.nextFloat() * radius;
-        while (radius > maxRadius) {
-            radius = random.nextFloat() * (float) (Math.sqrt(network.getNumberOfNodes() * 2) * gridSize);
-        }
+        float radius = getRadius(network);
         double rad = random.nextFloat() * 2 * Math.PI;
         float x = (float) (radius * Math.cos(rad)) + network.getWidth() / 2;
         float y = (float) (radius * Math.sin(rad)) + network.getHeight() / 2;
 
-        return addNode(network, type, (int)x, (int)y);
-        
+        return addNode(network, type, (int) x, (int) y);
     }
 
-    
-    
+    public float getRadius(Network network) {
+        float maxRadius = Math.min(network.getWidth() / 2, network.getHeight() / 2);
+        float radius = (float) (Math.sqrt(network.getNumberOfNodes() * 2) * gridSize);
+        radius = random.nextFloat() * radius;
+        if (radiusOver == -1) {
+            while (radius > maxRadius) {
+                radius = random.nextFloat() * (float) (Math.sqrt(network.getNumberOfNodes() * 2) * gridSize);
+            }
+        }
+
+        return radius;
+    }
+
 }

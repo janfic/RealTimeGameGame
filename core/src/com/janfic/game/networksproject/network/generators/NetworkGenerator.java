@@ -30,6 +30,7 @@ public abstract class NetworkGenerator {
     }
 
     public abstract Network create(int width, int height);
+    public abstract Network create(int width, int height, int overideRadius);
     public abstract NetworkNode addNode(Network network);
     public abstract NetworkNode addNode(Network network, NetworkNode node);
     public abstract NetworkNode addNode(Network network, float x, float y);

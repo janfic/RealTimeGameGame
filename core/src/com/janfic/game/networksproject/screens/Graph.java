@@ -46,8 +46,8 @@ public class Graph extends Actor {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.BLACK);
         //shapeRenderer.rect(getX(), getY(), getWidth(), getHeight());
-        shapeRenderer.rectLine(getX(), getY(), getX() + getWidth(), getY(), 1);
-        shapeRenderer.rectLine(getX(), getY(), getX(), getY() + getHeight(), 1);
+        shapeRenderer.rectLine(getX(), getY(), getX() + getWidth(), getY(), 2);
+        shapeRenderer.rectLine(getX(), getY(), getX(), getY() + getHeight(), 2);
         shapeRenderer.setColor(Color.LIGHT_GRAY);
         shapeRenderer.rectLine(getX() + current, getY(), getX() + current, getY() + getHeight(), 1);
         shapeRenderer.rectLine(getX(), getY() + getAverage() * getHeight(), getX() + getWidth(), getY() + getAverage() * getHeight(), 1);

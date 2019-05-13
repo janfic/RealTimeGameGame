@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.janfic.game.networksproject.network.Computer;
 import com.janfic.game.networksproject.network.Network;
@@ -84,7 +85,13 @@ public abstract class GameMatch extends Actor {
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 super.exit(event, x, y, pointer, toActor);
-                ((PlayScreen) GameMatch.this.getStage()).getPanel().getInfoLabel().setText("Hover over something to show more information");
+                try {
+                    Label label = ((PlayScreen) GameMatch.this.getStage()).getPanel().getInfoLabel();
+                    label.setText("Hover over something to show more information");
+                }
+                catch(Exception e) {
+                    
+                }
                 GameMatch.this.setZIndex(0);
                 focused = 1;
                 for (NetworkNode node : GameMatch.this.localNetwork) {

@@ -22,14 +22,15 @@ import java.text.DecimalFormat;
  */
 public class SidePanel extends Table {
 
-    private final ShapeRenderer shapeRenderer;
+    private ShapeRenderer shapeRenderer;
 
-    private final Network network;
-    private final MatchMaker matchMaker;
+    private Network network;
+    private MatchMaker matchMaker;
+    private RealTimeGameGame rtggame;
     private Game game;
     private DecimalFormat format;
 
-    private final Label nodesLabel, edgesLabel, packetsLabel, playersLabel, activePlayers, averageDemand, moneyLabel;
+    private Label nodesLabel, edgesLabel, packetsLabel, playersLabel, activePlayers, averageDemand, moneyLabel;
 
     private Table infoTable;
     private Label infoLabel, infoTitle;
@@ -40,8 +41,11 @@ public class SidePanel extends Table {
     float moneyTimer, demandTimer;
     private TextButton demandButton, moneyButton, packetButton;
 
-    public SidePanel(int x, int y, Network network, MatchMaker matchMaker, ShapeRenderer shapeRenderer, Game game) {
+    
+    
+    public SidePanel(int x, int y, Network network, MatchMaker matchMaker, ShapeRenderer shapeRenderer, Game game, RealTimeGameGame g) {
         super(RealTimeGameGame.Assets.SKIN);
+        this.rtggame = g;
         setX(x);
         setY(y);
         setWidth(600);
@@ -56,7 +60,7 @@ public class SidePanel extends Table {
         demandGraph = new Graph(550, 200, shapeRenderer);
         moneyGraph = new Graph(550, 200, shapeRenderer);
         packetGraph = new Graph(550, 200, shapeRenderer);
-        currentGraph = moneyGraph;
+        currentGraph = demandGraph;
         demandButton = new TextButton("Show Demand Graph", getSkin());
         moneyButton = new TextButton("Show Money Graph", getSkin());
         packetButton = new TextButton("Show Packet Graph", getSkin());
@@ -124,11 +128,14 @@ public class SidePanel extends Table {
 
         infoTable.add(infoTitle).growX().pad(5).row();
         infoTable.add(infoLabel).top().grow().pad(5);
-        add(infoTable).colspan(2).height(280).row();
+        add(infoTable).colspan(2).height(250).row();
 
         final Table graphTable = new Table(getSkin());
-        graphTable.defaults().space(5).grow().top().center();
+        final Label graphLabel = new Label("Demand Graph", getSkin());
+        graphLabel.setFontScale(2f);
+        graphTable.defaults().space(10).grow().top().center();
 
+        graphTable.add(graphLabel).colspan(3).row();
         graphTable.add(currentGraph).colspan(3).row();
 
         graphTable.add(demandButton, moneyButton, packetButton);
@@ -137,28 +144,69 @@ public class SidePanel extends Table {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 graphTable.clear();
+                graphTable.add(graphLabel).colspan(3).row();
                 graphTable.add(demandGraph).colspan(3).row();
                 graphTable.add(demandButton, moneyButton, packetButton);
+                graphLabel.setText("Demand Graph");
             }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                infoLabel.setText("Press this button to show the graph representing the change in the demand for your game. "
+                        + "This value depends on whether or not your players are happy or not. "
+                        + "This includes how long it takes for a match, and how well of a ping they have.");
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                infoLabel.setText("Hover over something to show more information");
+            }
+
         });
         moneyButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 graphTable.clear();
+                graphTable.add(graphLabel).colspan(3).row();
                 graphTable.add(moneyGraph).colspan(3).row();
                 graphTable.add(demandButton, moneyButton, packetButton);
+                graphLabel.setText("Money Graph");
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                infoLabel.setText("Press this button to show the graph representing how much money your company has from this game. "
+                        + "You get money everytime a match is started an everytime a player joins the network ( buys your game )");
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                infoLabel.setText("Hover over something to show more information");
             }
         });
         packetButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 graphTable.clear();
+                graphTable.add(graphLabel).colspan(3).row();
                 graphTable.add(packetGraph).colspan(3).row();
                 graphTable.add(demandButton, moneyButton, packetButton);
+                graphLabel.setText("Packets graph");
             }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                infoLabel.setText("Press this button to show a graph of how many packets are on the network at a given time.");
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                infoLabel.setText("Hover over something to show more information");
+            }
+
         });
 
-        add(graphTable).colspan(2);
+        add(graphTable).colspan(2).row();
 
         lanButton.addListener(new ClickListener() {
             @Override
@@ -175,7 +223,7 @@ public class SidePanel extends Table {
                 super.enter(event, x, y, pointer, fromActor);
                 infoLabel.setText(
                         "The LAN real-time game network is the most basic structure a real-time game can implement. "
-                        + "This structure allows player only on the same local network to connect and play. "
+                        + "This structure allows players only on the same local network to connect and play. "
                         + "One player acts as the \"Host\" while others are considered a \"client\". Though this is a "
                         + "cheap model and one relatively easy to implement into a game, it does present a few probelems."
                         + " Everything in this structure depends on the host computer, meaning the host is determining what "
@@ -249,7 +297,24 @@ public class SidePanel extends Table {
                 infoLabel.setText("Hover over something to show more information");
             }
         });
+        
+        lanButton.setColor(Color.GREEN);
+        p2pButton.setColor(Color.YELLOW);
+        dgsButton.setColor(Color.CYAN);
+        lanButton.getLabel().setColor(Color.BLACK);
+        p2pButton.getLabel().setColor(Color.BLACK);
+        dgsButton.getLabel().setColor(Color.BLACK);
 
+        TextButton backButton = new TextButton("Back to Main Menu", getSkin());
+        backButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                rtggame.setScreen(new MainMenuScreen(rtggame));
+            }
+        });
+        
+        add(backButton).colspan(2).growX().row();
+        
         left();
         top();
     }
@@ -257,7 +322,7 @@ public class SidePanel extends Table {
     public Label getInfoLabel() {
         return infoLabel;
     }
-    
+
     @Override
     public void act(float delta) {
         super.act(delta);
@@ -269,11 +334,11 @@ public class SidePanel extends Table {
         packetsLabel.setText("Packets: " + network.getPackets());
         averageDemand.setText("Average Demand: " + format.format(game.getDemand() * 100) + "%");
         demandTimer += delta;
-        if(demandTimer >= 0.05f) {
+        if (demandTimer >= 0.05f) {
             demandGraph.next(game.getDemand());
             demandTimer = 0;
         }
-        
+
         moneyTimer += delta;
         if (moneyTimer >= 0.25f) {
             moneyGraph.next(game.getMoney() / 2000f);
@@ -288,7 +353,7 @@ public class SidePanel extends Table {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2);
-        shapeRenderer.setColor(getColor());
+        shapeRenderer.setColor(0.90f, 1f, 1f, 0.95f);
         shapeRenderer.rect(getX(), getY(), getWidth(), getHeight());
         shapeRenderer.end();
         batch.begin();

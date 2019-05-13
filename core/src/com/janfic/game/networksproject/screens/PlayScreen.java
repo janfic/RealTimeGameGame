@@ -2,7 +2,6 @@ package com.janfic.game.networksproject.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.janfic.game.networksproject.RealTimeGameGame;
 import com.janfic.game.networksproject.game.DGSMatch;
 import com.janfic.game.networksproject.game.Game;
 import com.janfic.game.networksproject.game.LANMatch;
@@ -31,6 +31,7 @@ import com.janfic.game.networksproject.network.generators.NetworkGenerator;
  */
 public class PlayScreen extends Stage implements Screen {
 
+    private RealTimeGameGame rtgGame;
     private NetworkGenerator generator;
     private Network network;
     private MatchMaker matchMaker;
@@ -44,6 +45,13 @@ public class PlayScreen extends Stage implements Screen {
     private Viewport viewport;
     private OrthographicCamera camera;
 
+    public PlayScreen( RealTimeGameGame g) {
+        super();
+        rtgGame = g;
+    }
+
+    
+    
     @Override
     public void show() {
 
@@ -55,7 +63,7 @@ public class PlayScreen extends Stage implements Screen {
         matchMaker = new MatchMaker(network, shapeRenderer);
         game = new Game("YOUR GAME", "Sandbox", "Pixel", 5, 30f, 10, new boolean[]{false, false, false}, network, matchMaker);
 
-        panel = new SidePanel(800, 0, network, matchMaker, shapeRenderer, game);
+        panel = new SidePanel(800, 0, network, matchMaker, shapeRenderer, game, rtgGame);
 
         camera = new OrthographicCamera(800, 800);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);

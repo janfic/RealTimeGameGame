@@ -44,7 +44,7 @@ public class Game extends Actor {
         this.network = network;
         this.matchMaker = matchMaker;
         this.demand = 0.5f;
-        this.money = 2000;
+        this.money = 500;
     }
 
     @Override
