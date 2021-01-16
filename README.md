@@ -1,4 +1,4 @@
-﻿# RealTimeGameGame
+﻿# RealTimeGameTycoon
 
 This game is a final project for a Computer Networks class, taken in Spring 2019 at New College of Florida, with Professor Lepinski. For this project we were assigned to choose a topic that we did not greatly cover in class and to present the topic in whatever medium we would like. We could do this in groups up to 4 people. I chose to do it independently.
 
